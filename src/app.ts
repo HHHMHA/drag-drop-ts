@@ -1,3 +1,57 @@
+// Validation
+interface Validatable {
+    value:  string | number;
+    required?: boolean;
+    minLength?: number;
+    maxLength?: number;
+    min?: number;
+    max?: number;
+}
+
+function validate(validatableInput: Validatable) {
+    const stringValue = validatableInput.value.toString();
+    if (
+        validatableInput.required &&
+        stringValue.trim().length === 0
+    ) {
+        return false;
+    }
+
+    if (
+        validatableInput.minLength != null &&
+        typeof validatableInput.value == 'string' &&
+        stringValue.length <= validatableInput.minLength
+    ) {
+        return false;
+    }
+
+    if (
+        validatableInput.maxLength != null &&
+        typeof validatableInput.value == 'string' &&
+        stringValue.length >= validatableInput.maxLength
+    ) {
+        return false;
+    }
+
+    if (
+        validatableInput.min &&
+        typeof validatableInput.value == 'number' &&
+        validatableInput.value <= validatableInput.min
+    ) {
+        return false;
+    }
+
+    if (
+        validatableInput.max &&
+        typeof validatableInput.value == 'number' &&
+        validatableInput.value >= validatableInput.max
+    ) {
+        return false;
+    }
+
+    return true;
+}
+
 // autobind decorator
 function autobind(
     _: any,
@@ -66,9 +120,9 @@ class ProjectInput {
         const enteredPeople = this.peopleInputElement.value;
 
         if (
-            enteredTitle.trim().length === 0 ||
-            enteredDescription.trim().length === 0 ||
-            enteredPeople.trim().length === 0
+            !validate({value: enteredTitle, required: true}) ||
+            !validate({value: enteredDescription, required: true, minLength: 5}) ||
+            !validate({value: +enteredPeople, required: true, min: 1})
         ) {
             alert("Invalid input!");
             return;
